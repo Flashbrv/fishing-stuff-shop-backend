@@ -6,10 +6,7 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -25,9 +22,12 @@ public class ProductEntity extends BaseEntity {
     @Column(name = "description", nullable = false)
     private String description;
 
+    @Column(name = "image")
+    private String image;
+
     @Column(name = "price")
     private int price;
 
-    @ManyToOne(optional = false)
-    private TypeEntity type;
+    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+    private ProductTypeEntity type;
 }
