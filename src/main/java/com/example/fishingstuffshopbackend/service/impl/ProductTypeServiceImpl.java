@@ -4,9 +4,8 @@ import com.example.fishingstuffshopbackend.dto.ProductTypeDto;
 import com.example.fishingstuffshopbackend.exception.ProductTypeEntityWithSuchNameExist;
 import com.example.fishingstuffshopbackend.exception.ProductTypeNotFoundException;
 import com.example.fishingstuffshopbackend.mapper.ProductTypeMapper;
-import com.example.fishingstuffshopbackend.model.ProductTypeEntity;
+import com.example.fishingstuffshopbackend.model.Category;
 import com.example.fishingstuffshopbackend.repository.ProductTypeRepository;
-import com.example.fishingstuffshopbackend.service.CheckParameterUtils;
 import com.example.fishingstuffshopbackend.service.ProductTypeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -51,11 +50,11 @@ public class ProductTypeServiceImpl implements ProductTypeService {
     @Override
     public ProductTypeDto update(Long id, String newName) {
         log.debug("Try to update ProductTypeEntity with id=" + id);
-        ProductTypeEntity type = typeRepository
+        Category type = typeRepository
                 .findById(requireNonNullAndGreaterThanZero("id", id))
                 .orElseThrow(() -> new ProductTypeNotFoundException(id));
 
-        type.setName(requireNonNullAndNonBlank("newName", newName));
+        type.setTitle(requireNonNullAndNonBlank("newName", newName));
 
         log.debug("Update ProductTypeEntity " + type);
         return typeMapper.toDto(typeRepository.save(type));
@@ -63,8 +62,8 @@ public class ProductTypeServiceImpl implements ProductTypeService {
 
     @Override
     public ProductTypeDto create(String name) {
-        ProductTypeEntity type = new ProductTypeEntity();
-        type.setName(requireNonNullAndNonBlank("name", name));
+        Category type = new Category();
+        type.setTitle(requireNonNullAndNonBlank("name", name));
         log.info("Create ProductTypeEntity with name: " + name);
 
         try {
