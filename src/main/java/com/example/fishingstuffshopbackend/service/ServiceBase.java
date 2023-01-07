@@ -6,8 +6,8 @@ import java.util.List;
 
 public interface ServiceBase<T extends BaseEntity> {
     List<T> findAll();
-    T findById(Long id);
-    T update(Long id, T toUpdate);
+    T findById(long id);
+    T update(long id, T toUpdate);
     T create(T toCreate);
-    void delete(Long id);
+    void delete(long id);
 }

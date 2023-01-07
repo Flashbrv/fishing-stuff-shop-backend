@@ -1,29 +1,9 @@
 package com.example.fishingstuffshopbackend.service.impl;
 
-import com.example.fishingstuffshopbackend.dto.ProductTypeDto;
-import com.example.fishingstuffshopbackend.exception.BadParameterException;
-import com.example.fishingstuffshopbackend.exception.ProductTypeEntityWithSuchNameExist;
-import com.example.fishingstuffshopbackend.exception.ProductTypeNotFoundException;
-import com.example.fishingstuffshopbackend.mapper.ProductTypeMapper;
-import com.example.fishingstuffshopbackend.mapper.ProductTypeMapperImpl;
-import com.example.fishingstuffshopbackend.model.Category;
-import com.example.fishingstuffshopbackend.repository.ProductTypeRepository;
-import com.example.fishingstuffshopbackend.service.ProductTypeService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProductTypeServiceTest {

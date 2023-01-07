@@ -2,7 +2,7 @@ package com.example.fishingstuffshopbackend.controller;
 
 import com.example.fishingstuffshopbackend.exception.ParameterMissingOrBlankException;
 import com.example.fishingstuffshopbackend.exception.RestErrorMessage;
-import com.example.fishingstuffshopbackend.exception.ProductTypeNotFoundException;
+import com.example.fishingstuffshopbackend.exception.CategoryNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ public class GlobalExceptionHandlerController extends ResponseEntityExceptionHan
         return handleResponseStatusException(ex, request);
     }
 
-    @ExceptionHandler({ProductTypeNotFoundException.class})
+    @ExceptionHandler({CategoryNotFoundException.class})
     ResponseEntity<?> notFoundExceptionHandler(Exception ex, WebRequest request) {
         log.error(ex.getLocalizedMessage(), ex);
         return handleNotFoundException(ex, request);
