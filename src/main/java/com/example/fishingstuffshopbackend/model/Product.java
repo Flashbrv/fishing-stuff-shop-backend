@@ -9,9 +9,7 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -34,21 +32,29 @@ public class Product extends BaseEntity {
     @Column(name = "price", nullable = false)
     private BigDecimal price;
 
-    @ManyToMany(mappedBy = "products", cascade = CascadeType.PERSIST)
-    private List<Category> categories = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "fs_products_categories",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    @Builder.Default
+    private Set<Category> categories = new HashSet<>();
 
-    private void setCategories(List<Category> categories) {
+    private void setCategories(Set<Category> categories) {
         this.categories = categories;
+    }
+
+    public Set<Category> getCategories() {
+        return Collections.unmodifiableSet(categories);
     }
 
     public void addCategory(Category category) {
         Objects.requireNonNull(category);
-        category.getProducts().add(this);
         categories.add(category);
     }
 
     public void removeCategory(Category category) {
-        category.getProducts().remove(this);
         categories.remove(category);
     }
 }

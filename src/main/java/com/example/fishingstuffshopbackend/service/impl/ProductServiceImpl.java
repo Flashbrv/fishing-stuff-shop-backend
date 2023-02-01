@@ -8,7 +8,6 @@ import com.example.fishingstuffshopbackend.repository.CategoryRepository;
 import com.example.fishingstuffshopbackend.repository.ProductRepository;
 import com.example.fishingstuffshopbackend.service.ProductService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -44,6 +43,7 @@ public class ProductServiceImpl implements ProductService {
         product.setDescription(toUpdate.getDescription());
         product.setPrice(toUpdate.getPrice());
         product.setImage(toUpdate.getImage());
+
         return productRepository.save(product);
     }
 
@@ -57,25 +57,23 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(id);
     }
 
-    @Transactional
     @Override
-    public Product addProductToCategory(long productId, long categoryId) {
-        Product product = productRepository
-                .findById(productId)
+    public Product addToCategory(long productId, long categoryId) {
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
-        Category category = categoryRepository
-                .findById(categoryId)
+        Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
         product.addCategory(category);
         return productRepository.save(product);
     }
 
-    @Transactional
     @Override
-    public List<Category> getProductCategories(long productId) {
-        Product product = productRepository
-                .findById(productId)
+    public Product removeFromCategory(long productId, long categoryId) {
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
-        return product.getCategories();
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+        product.removeCategory(category);
+        return productRepository.save(product);
     }
 }

@@ -45,9 +45,10 @@ public class User extends BaseEntity {
     private Role role;
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "user")
+    @Builder.Default
     private List<Order> orders = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(cascade = CascadeType.ALL)
     private Bucket bucket;
 
     private void setOrders(List<Order> orders) {

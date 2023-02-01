@@ -8,7 +8,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -20,10 +21,6 @@ import java.util.List;
 @SQLDelete(sql = "UPDATE fs_buckets SET deleted = true WHERE id = ? and version = ?")
 public class Bucket extends BaseEntity {
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
     @OneToMany(mappedBy = "bucket")
-    private List<BucketItem> bucketItems;
+    private Set<BucketItem> bucketItems = new HashSet<>();
 }

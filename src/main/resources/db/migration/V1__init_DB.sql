@@ -26,7 +26,7 @@ CREATE TABLE `fs_buckets` (
   `last_modified_by` varchar(255) DEFAULT NULL,
   `last_modified_date` datetime(6) DEFAULT NULL,
   `version` int DEFAULT NULL,
-  `user_id` bigint DEFAULT NULL
+  `user_id` bigint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -153,7 +153,7 @@ CREATE TABLE `fs_users` (
 -- Table structure for table `products_categories`
 --
 
-CREATE TABLE `products_categories` (
+CREATE TABLE `fs_products_categories` (
   `category_id` bigint NOT NULL,
   `product_id` bigint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -218,7 +218,7 @@ ALTER TABLE `fs_users`
 --
 -- Indexes for table `products_categories`
 --
-ALTER TABLE `products_categories`
+ALTER TABLE `fs_products_categories`
   ADD KEY `FK_PRODUCT_CATEGORIES_TO_PRODUCT` (`product_id`),
   ADD KEY `FK_PRODUCT_CATEGORIES_TO_CATEGORY` (`category_id`);
 
@@ -307,7 +307,7 @@ ALTER TABLE `fs_users`
 --
 -- Constraints for table `products_categories`
 --
-ALTER TABLE `products_categories`
+ALTER TABLE `fs_products_categories`
   ADD CONSTRAINT `FK_PRODUCT_CATEGORIES_TO_PRODUCT` FOREIGN KEY (`product_id`) REFERENCES `fs_products` (`id`),
   ADD CONSTRAINT `FK_PRODUCT_CATEGORIES_TO_CATEGORY` FOREIGN KEY (`category_id`) REFERENCES `fs_categories` (`id`);
 COMMIT;

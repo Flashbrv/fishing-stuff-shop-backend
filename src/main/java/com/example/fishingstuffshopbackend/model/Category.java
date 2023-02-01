@@ -1,14 +1,16 @@
 package com.example.fishingstuffshopbackend.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -22,14 +24,4 @@ public class Category extends BaseEntity {
     @Column(name = "title", nullable = false, unique = true)
     @Size(min = 3, max = 75)
     private String title;
-
-    @ManyToMany
-    @JoinTable(name = "products_categories",
-        joinColumns = @JoinColumn(name = "category_id"),
-        inverseJoinColumns = @JoinColumn(name = "product_id"))
-    private List<Product> products = new ArrayList<>();
-
-    private void setProducts(List<Product> products) {
-        this.products = products;
-    }
 }
