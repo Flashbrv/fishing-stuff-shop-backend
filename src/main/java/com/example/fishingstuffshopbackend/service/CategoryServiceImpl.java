@@ -1,8 +1,8 @@
-package com.example.fishingstuffshopbackend.service.impl;
+package com.example.fishingstuffshopbackend.service;
 
 import com.example.fishingstuffshopbackend.exception.SuchCategoryExist;
 import com.example.fishingstuffshopbackend.exception.CategoryNotFoundException;
-import com.example.fishingstuffshopbackend.model.Category;
+import com.example.fishingstuffshopbackend.domain.Category;
 import com.example.fishingstuffshopbackend.repository.CategoryRepository;
 import com.example.fishingstuffshopbackend.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.example.fishingstuffshopbackend.service.CheckParameterUtils.requireNonNullAndGreaterThanZero;
+import static com.example.fishingstuffshopbackend.utils.CheckParameterUtils.requireNonNullAndGreaterThanZero;
 
 @Service
 @Slf4j

@@ -1,8 +1,8 @@
 package com.example.fishingstuffshopbackend.controller;
 
-import com.example.fishingstuffshopbackend.dto.CategoryDto;
+import com.example.fishingstuffshopbackend.dto.NewCategoryDto;
 import com.example.fishingstuffshopbackend.mapper.CategoryMapper;
-import com.example.fishingstuffshopbackend.model.Category;
+import com.example.fishingstuffshopbackend.domain.Category;
 import com.example.fishingstuffshopbackend.service.CategoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,14 +38,14 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<?> create(@RequestBody NewCategoryDto categoryDto) {
         Category newCategory = categoryService.create(mapper.toEntity(categoryDto));
         return ResponseEntity.ok()
                 .body(mapper.toDto(newCategory));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable long id, @RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<?> update(@PathVariable long id, @RequestBody NewCategoryDto categoryDto) {
         Category updatedCategory = categoryService.update(id, mapper.toEntity(categoryDto));
         return ResponseEntity.ok()
                 .body(mapper.toDto(updatedCategory));

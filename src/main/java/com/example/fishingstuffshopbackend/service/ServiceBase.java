@@ -1,6 +1,6 @@
 package com.example.fishingstuffshopbackend.service;
 
-import com.example.fishingstuffshopbackend.model.BaseEntity;
+import com.example.fishingstuffshopbackend.domain.BaseEntity;
 
 import java.util.List;
 

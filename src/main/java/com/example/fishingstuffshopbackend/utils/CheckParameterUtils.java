@@ -1,6 +1,8 @@
-package com.example.fishingstuffshopbackend.service;
+package com.example.fishingstuffshopbackend.utils;
 
 import com.example.fishingstuffshopbackend.exception.BadParameterException;
+
+import java.util.function.Consumer;
 
 public class CheckParameterUtils {
     public static  <T> T requireNonNull(String argName, T value) {
@@ -19,5 +21,15 @@ public class CheckParameterUtils {
         if (value == null || value.longValue() <= 0 )
             throw new BadParameterException(argName, value);
         return value;
+    }
+
+    public static <T> void setIfNotNull(Consumer<T> fieldSetter, T newValue) {
+        if (newValue != null)
+            fieldSetter.accept(newValue);
+    }
+
+    public static void setIfNotNullOrBlank(Consumer<String> fieldSetter, String newValue) {
+        if (newValue != null && !newValue.isBlank())
+            fieldSetter.accept(newValue);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.fishingstuffshopbackend.model;
+package com.example.fishingstuffshopbackend.domain;
 
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -40,10 +40,6 @@ public abstract class BaseEntity implements Serializable {
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Integer getVersion() {

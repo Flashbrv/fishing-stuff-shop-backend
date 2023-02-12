@@ -1,15 +1,18 @@
-package com.example.fishingstuffshopbackend.service.impl;
+package com.example.fishingstuffshopbackend.service;
 
 import com.example.fishingstuffshopbackend.exception.CategoryNotFoundException;
 import com.example.fishingstuffshopbackend.exception.ProductNotFoundException;
-import com.example.fishingstuffshopbackend.model.Category;
-import com.example.fishingstuffshopbackend.model.Product;
+import com.example.fishingstuffshopbackend.domain.Category;
+import com.example.fishingstuffshopbackend.domain.Product;
 import com.example.fishingstuffshopbackend.repository.CategoryRepository;
 import com.example.fishingstuffshopbackend.repository.ProductRepository;
 import com.example.fishingstuffshopbackend.service.ProductService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.example.fishingstuffshopbackend.utils.CheckParameterUtils.setIfNotNull;
+import static com.example.fishingstuffshopbackend.utils.CheckParameterUtils.setIfNotNullOrBlank;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -39,10 +42,10 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository
                 .findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
-        product.setTitle(toUpdate.getTitle());
-        product.setDescription(toUpdate.getDescription());
-        product.setPrice(toUpdate.getPrice());
-        product.setImage(toUpdate.getImage());
+        setIfNotNullOrBlank(product::setTitle, toUpdate.getTitle());
+        setIfNotNullOrBlank(product::setDescription, toUpdate.getDescription());
+        setIfNotNullOrBlank(product::setImage, toUpdate.getImage());
+        setIfNotNull(product::setPrice, toUpdate.getPrice());
 
         return productRepository.save(product);
     }

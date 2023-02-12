@@ -1,4 +1,4 @@
-package com.example.fishingstuffshopbackend.model;
+package com.example.fishingstuffshopbackend.domain;
 
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -41,17 +41,19 @@ public class User extends BaseEntity {
     @Size(min = 8, max = 255)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @Builder.Default
+    private Set<Role> roles = new HashSet<>(5);
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "user")
     @Builder.Default
-    private List<Order> orders = new ArrayList<>();
+    private Set<Order> orders = new HashSet<>();
 
     @OneToOne(cascade = CascadeType.ALL)
-    private Bucket bucket;
+    @Builder.Default
+    private Bucket bucket = new Bucket();
 
-    private void setOrders(List<Order> orders) {
+    private void setOrders(Set<Order> orders) {
         this.orders = orders;
     }
 

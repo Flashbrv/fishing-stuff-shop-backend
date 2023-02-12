@@ -1,4 +1,4 @@
-package com.example.fishingstuffshopbackend.model;
+package com.example.fishingstuffshopbackend.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,6 +1,6 @@
 package com.example.fishingstuffshopbackend.repository;
 
-import com.example.fishingstuffshopbackend.model.Product;
+import com.example.fishingstuffshopbackend.domain.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
