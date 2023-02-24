@@ -1,10 +1,9 @@
 package com.example.fishingstuffshopbackend.service;
 
-import com.example.fishingstuffshopbackend.exception.SuchCategoryExist;
+import com.example.fishingstuffshopbackend.exception.SuchCategoryExistException;
 import com.example.fishingstuffshopbackend.exception.CategoryNotFoundException;
 import com.example.fishingstuffshopbackend.domain.Category;
 import com.example.fishingstuffshopbackend.repository.CategoryRepository;
-import com.example.fishingstuffshopbackend.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.example.fishingstuffshopbackend.utils.CheckParameterUtils.requireNonNullAndGreaterThanZero;
+import static com.example.fishingstuffshopbackend.utils.CheckParameterUtils.*;
 
 @Service
 @Slf4j
@@ -33,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Category findById(long id) {
         log.debug("Get ProductTypeEntity with id=" + id);
         return categoryRepository
-                .findById(requireNonNullAndGreaterThanZero("id", id))
+                .findById(requireGreaterThanZero("Category id", id))
                 .orElseThrow(() -> new CategoryNotFoundException(id));
     }
 
@@ -41,10 +40,11 @@ public class CategoryServiceImpl implements CategoryService {
     public Category update(long id, Category toUpdate) {
         log.debug("Update category with id=" + id);
         Category fromDB = categoryRepository
-                .findById(requireNonNullAndGreaterThanZero("id", id))
+                .findById(requireGreaterThanZero("Category id", id))
                 .orElseThrow(() -> new CategoryNotFoundException(id));
 
-        fromDB.setTitle(toUpdate.getTitle());
+        requireNonNull("Category to update", toUpdate);
+        setIfNotNullOrBlank(fromDB::setTitle, toUpdate.getTitle());
 
         log.debug("Update category " + fromDB);
         return categoryRepository.save(fromDB);
@@ -53,11 +53,12 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category create(Category toCreate) {
         log.info("Create category: " + toCreate);
-
+        requireNonNull("New category", toCreate);
+        requireNonNullAndNonBlank("Category title", toCreate.getTitle());
         try {
             return categoryRepository.save(toCreate);
         } catch (DataIntegrityViolationException ex) {
-            throw new SuchCategoryExist(toCreate.getTitle());
+            throw new SuchCategoryExistException(toCreate.getTitle());
         }
     }
 
@@ -65,7 +66,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(long id) {
         log.info("Delete category with id=" + id);
         try {
-            categoryRepository.deleteById(requireNonNullAndGreaterThanZero("id", id));
+            categoryRepository.deleteById(requireGreaterThanZero("Category id", id));
             log.info("Category with id=" + id + " deleted");
         } catch (EmptyResultDataAccessException ex) {
             log.debug("Try to delete category with id=" + id + ", which doesn't exist");

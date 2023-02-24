@@ -1,12 +1,11 @@
 package com.example.fishingstuffshopbackend.service;
 
-import com.example.fishingstuffshopbackend.exception.CategoryNotFoundException;
-import com.example.fishingstuffshopbackend.exception.ProductNotFoundException;
 import com.example.fishingstuffshopbackend.domain.Category;
 import com.example.fishingstuffshopbackend.domain.Product;
+import com.example.fishingstuffshopbackend.exception.CategoryNotFoundException;
+import com.example.fishingstuffshopbackend.exception.ProductNotFoundException;
 import com.example.fishingstuffshopbackend.repository.CategoryRepository;
 import com.example.fishingstuffshopbackend.repository.ProductRepository;
-import com.example.fishingstuffshopbackend.service.ProductService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

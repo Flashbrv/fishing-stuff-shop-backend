@@ -15,26 +15,14 @@ public class Role extends BaseEntity {
     @Column(name = "name", unique = true)
     private String name;
 
-    Role() {
+    protected Role() {
     }
 
     public Role(String name) {
         this.name = name;
     }
 
-    private Role(Roles role) {
-        this(role.name());
-    }
-
     public String getName() {
         return name;
-    }
-
-    public static Role getUserRole() {
-        return new Role(Roles.ROLE_USER);
-    }
-
-    private enum Roles{
-        ROLE_USER, ROLE_MANAGER, ROLE_ADMIN
     }
 }

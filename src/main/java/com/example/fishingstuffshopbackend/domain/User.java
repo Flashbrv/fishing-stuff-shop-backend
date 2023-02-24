@@ -68,4 +68,18 @@ public class User extends BaseEntity {
         orders.remove(order);
         order.setUser(null);
     }
+
+    private void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public void addRole(Role role) {
+        requireNonNull(role);
+        roles.add(role);
+    }
+
+    public void removeRole(Role role) {
+        requireNonNull(role);
+        roles.remove(role);
+    }
 }

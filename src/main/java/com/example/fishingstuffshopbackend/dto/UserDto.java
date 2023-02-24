@@ -1,11 +1,11 @@
 package com.example.fishingstuffshopbackend.dto;
 
-import com.example.fishingstuffshopbackend.domain.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -16,5 +16,5 @@ public class UserDto implements Serializable {
     private String lastName;
     private String email;
     private String phoneNumber;
-    private Role role;
+    private Set<RoleDTO> roles;
 }

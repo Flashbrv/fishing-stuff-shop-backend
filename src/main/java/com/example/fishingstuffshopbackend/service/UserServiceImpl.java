@@ -8,9 +8,16 @@ import com.example.fishingstuffshopbackend.repository.RoleRepository;
 import com.example.fishingstuffshopbackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.example.fishingstuffshopbackend.utils.CheckParameterUtils.setIfNotNullOrBlank;
@@ -19,13 +26,32 @@ import static com.example.fishingstuffshopbackend.utils.CheckParameterUtils.setI
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            log.error("User {} not found in the database", email);
+            throw new UsernameNotFoundException(String.format("User %s not found in the database", email));
+        }
+
+        log.info("User {} found in the database", email);
+
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        user.getRoles().forEach(role -> {
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
+        });
+
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
+    }
 
     @Override
     public List<User> findAll() {
-        log.info("Getting all users");
+        log.info("Fetching all users");
         return userRepository.findAll();
     }
 
@@ -38,8 +64,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUser(String email) {
+        log.info("Fetching user {}", email);
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
     public User create(User toCreate) {
         log.info("Saving new user {} to database", toCreate.getEmail());
+        toCreate.setPassword(passwordEncoder.encode(toCreate.getPassword()));
         return userRepository.save(toCreate);
     }
 
@@ -68,27 +101,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Role save(Role role) {
-        log.info("Saving role {} to the database", role.getName());
+        log.info("Saving new role {} to the database", role.getName());
         return roleRepository.save(role);
     }
 
     @Override
     public void addRoleToUser(String email, String roleName) {
         log.info("Set role {} to user {} ", roleName, email);
-        User user = userRepository.findFirstByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
-        Role role = roleRepository.findFirstByName(roleName)
-                .orElseThrow(() -> new RoleNotFoundException(roleName));
-        user.getRoles().add(role);
+        User user = userRepository.findByEmail(email);
+                //.orElseThrow(() -> new UserNotFoundException(email));
+        Role role = roleRepository.findByName(roleName);
+                //.orElseThrow(() -> new RoleNotFoundException(roleName));
+        user.addRole(role);
     }
 
     @Override
     public void removeRoleFromUser(String email, String roleName) {
         log.info("Remove role {} from user {} ", roleName, email);
-        User user = userRepository.findFirstByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
-        Role role = roleRepository.findFirstByName(roleName)
-                .orElseThrow(() -> new RoleNotFoundException(roleName));
-        user.getRoles().remove(role);
+        User user = userRepository.findByEmail(email);
+//                .orElseThrow(() -> new UserNotFoundException(email));
+        Role role = roleRepository.findByName(roleName);
+//                .orElseThrow(() -> new RoleNotFoundException(roleName));
+        user.removeRole(role);
     }
 }
