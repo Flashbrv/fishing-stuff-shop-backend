@@ -2,7 +2,8 @@ package com.example.fishingstuffshopbackend.service;
 
 import com.example.fishingstuffshopbackend.domain.Role;
 import com.example.fishingstuffshopbackend.domain.User;
-import com.example.fishingstuffshopbackend.exception.RoleNotFoundException;
+import com.example.fishingstuffshopbackend.exception.BadParameterException;
+import com.example.fishingstuffshopbackend.exception.SuchUserExistException;
 import com.example.fishingstuffshopbackend.exception.UserNotFoundException;
 import com.example.fishingstuffshopbackend.repository.RoleRepository;
 import com.example.fishingstuffshopbackend.repository.UserRepository;
@@ -19,8 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
-import static com.example.fishingstuffshopbackend.utils.CheckParameterUtils.setIfNotNullOrBlank;
+import static com.example.fishingstuffshopbackend.utils.CheckParameterUtils.*;
 
 @Service
 @Transactional
@@ -33,13 +35,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            log.error("User {} not found in the database", email);
-            throw new UsernameNotFoundException(String.format("User %s not found in the database", email));
-        }
-
-        log.info("User {} found in the database", email);
+        log.info("Fetching User by email {} from database", email);
+        User user = userRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         user.getRoles().forEach(role -> {
@@ -64,21 +63,48 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User getUser(String email) {
+    public User findByEmail(String email) {
         log.info("Fetching user {}", email);
-        return userRepository.findByEmail(email);
+        return userRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
     }
 
     @Override
     public User create(User toCreate) {
-        log.info("Saving new user {} to database", toCreate.getEmail());
+        requireNonNull("New user", toCreate);
+
+        log.info("Check email");
+        requireNonNullAndNonBlank("Email", toCreate.getEmail());
+        Optional<User> user = userRepository
+                .findByEmail(toCreate.getEmail());
+        if (user.isPresent()) {
+            log.info("User with email {} currently present in database", toCreate.getEmail());
+            throw new SuchUserExistException(toCreate.getEmail());
+        }
+
+        log.info("Check firstName");
+        requireNonNullAndNonBlank("FirstName", toCreate.getFirstName());
+
+        log.info("Check phoneNumber");
+        requireNonNullAndNonBlank("PhoneNumber", toCreate.getPhoneNumber());
+        String phoneNumber = toCreate.getPhoneNumber().trim();
+        if (phoneNumber.length() != 12 || !phoneNumber.matches("\\d{12}")) {
+            throw new BadParameterException(String.format("PhoneNumber have invalid format or length"));
+        }
+
+        log.info("Check password");
+        requireNonNullAndNonBlank("Password", toCreate.getPassword());
+        log.info("Encode password");
         toCreate.setPassword(passwordEncoder.encode(toCreate.getPassword()));
+
+        log.info("Saving new user {} to database", toCreate.getEmail());
         return userRepository.save(toCreate);
     }
 
     @Override
     public User update(long id, User toUpdate) {
-        log.info("Looking for user with id={} for update", id);
+        log.info("Fetching user with id={} from database", id);
         User user = userRepository
                 .findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
@@ -86,10 +112,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         log.info("Update user {}", user.getEmail());
         setIfNotNullOrBlank(user::setFirstName, toUpdate.getFirstName());
         setIfNotNullOrBlank(user::setLastName, toUpdate.getLastName());
-        setIfNotNullOrBlank(user::setEmail, toUpdate.getEmail());
         setIfNotNullOrBlank(user::setPhoneNumber, toUpdate.getPhoneNumber());
 
-        log.info("Saving updated user {} to ths database", user.getEmail());
+        log.info("Saving updated user {} to database", user.getEmail());
         return userRepository.save(user);
     }
 
@@ -108,8 +133,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public void addRoleToUser(String email, String roleName) {
         log.info("Set role {} to user {} ", roleName, email);
-        User user = userRepository.findByEmail(email);
-                //.orElseThrow(() -> new UserNotFoundException(email));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
         Role role = roleRepository.findByName(roleName);
                 //.orElseThrow(() -> new RoleNotFoundException(roleName));
         user.addRole(role);
@@ -118,8 +143,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public void removeRoleFromUser(String email, String roleName) {
         log.info("Remove role {} from user {} ", roleName, email);
-        User user = userRepository.findByEmail(email);
-//                .orElseThrow(() -> new UserNotFoundException(email));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
         Role role = roleRepository.findByName(roleName);
 //                .orElseThrow(() -> new RoleNotFoundException(roleName));
         user.removeRole(role);

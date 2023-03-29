@@ -3,6 +3,7 @@ package com.example.fishingstuffshopbackend.domain;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.format.annotation.NumberFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -34,7 +35,7 @@ public class User extends BaseEntity {
     private String email;
 
     @Column(name = "phone_number", nullable = false, unique = true)
-    @Size(min = 13, max = 13)
+    @Size(min = 12, max = 12)
     private String phoneNumber;
 
     @Column(name = "password", nullable = false)

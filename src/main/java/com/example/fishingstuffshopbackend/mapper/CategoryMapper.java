@@ -8,5 +8,5 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public abstract class CategoryMapper {
     public abstract CategoryDto toDto(Category entity);
-    public abstract Category toEntity(NewCategoryDto dto);
+    public abstract Category toEntity(CategoryDto dto);
 }

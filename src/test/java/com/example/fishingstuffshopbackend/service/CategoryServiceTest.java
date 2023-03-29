@@ -1,12 +1,10 @@
-package com.example.fishingstuffshopbackend.service.impl;
+package com.example.fishingstuffshopbackend.service;
 
 import com.example.fishingstuffshopbackend.domain.Category;
 import com.example.fishingstuffshopbackend.exception.BadParameterException;
 import com.example.fishingstuffshopbackend.exception.CategoryNotFoundException;
 import com.example.fishingstuffshopbackend.exception.SuchCategoryExistException;
 import com.example.fishingstuffshopbackend.repository.CategoryRepository;
-import com.example.fishingstuffshopbackend.service.CategoryService;
-import com.example.fishingstuffshopbackend.service.CategoryServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -15,11 +13,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.fishingstuffshopbackend.TestUtils.setId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -117,7 +115,7 @@ class CategoryServiceTest {
     class FindByIdTests {
         @Test
         @DisplayName("should return one category")
-        void shouldReturnOneDto() {
+        void shouldReturnOneCategory() {
             when(repository.findById(1L)).thenReturn(Optional.of(hook));
 
             Category category = service.findById(1L);
@@ -276,15 +274,5 @@ class CategoryServiceTest {
         }
     }
 
-    public static void setId(Category category, Long id) {
-        try {
-            Field fieldId = category.getClass().getSuperclass().getDeclaredField("id");
-            fieldId.setAccessible(true);
-            fieldId.set(category, id);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
+
 }

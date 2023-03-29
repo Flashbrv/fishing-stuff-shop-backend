@@ -37,6 +37,18 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public Category create(Category toCreate) {
+        log.info("Create category: " + toCreate);
+        requireNonNull("New category", toCreate);
+        requireNonNullAndNonBlank("Category title", toCreate.getTitle());
+        try {
+            return categoryRepository.save(toCreate);
+        } catch (DataIntegrityViolationException ex) {
+            throw new SuchCategoryExistException(toCreate.getTitle());
+        }
+    }
+
+    @Override
     public Category update(long id, Category toUpdate) {
         log.debug("Update category with id=" + id);
         Category fromDB = categoryRepository
@@ -48,18 +60,6 @@ public class CategoryServiceImpl implements CategoryService {
 
         log.debug("Update category " + fromDB);
         return categoryRepository.save(fromDB);
-    }
-
-    @Override
-    public Category create(Category toCreate) {
-        log.info("Create category: " + toCreate);
-        requireNonNull("New category", toCreate);
-        requireNonNullAndNonBlank("Category title", toCreate.getTitle());
-        try {
-            return categoryRepository.save(toCreate);
-        } catch (DataIntegrityViolationException ex) {
-            throw new SuchCategoryExistException(toCreate.getTitle());
-        }
     }
 
     @Override

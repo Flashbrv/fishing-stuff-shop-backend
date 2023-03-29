@@ -10,9 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static java.util.Arrays.stream;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-
 @Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
@@ -27,7 +24,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         if (isRequestToPublicPath(request)) {
             filterChain.doFilter(request, response);
         } else {
-            if (!tokenManager.validateAccessToken(request, response, filterChain)) {
+            if (!tokenManager.validateAccessToken(request, response)) {
                 log.info("Unauthenticated request to {}", request.getRequestURL());
             } else {
                 filterChain.doFilter(request, response);
@@ -37,7 +34,9 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     private boolean isRequestToPublicPath(HttpServletRequest request) {
         if (request.getServletPath().equals("/api/v1/login") ||
-                request.getServletPath().equals("/api/v1/token/refresh")) {
+                request.getServletPath().equals("/api/v1/token/refresh") ||
+                request.getServletPath().contains("/swagger-ui/") ||
+                request.getServletPath().contains("/v3/api-docs")) {
             return true;
         }
         return false;

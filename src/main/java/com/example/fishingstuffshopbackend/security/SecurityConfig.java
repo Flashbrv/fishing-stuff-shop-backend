@@ -5,6 +5,7 @@ import com.example.fishingstuffshopbackend.filter.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -33,21 +33,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         CustomAuthenticationFilter filter = new CustomAuthenticationFilter(authenticationManagerBean(), tokenManager);
-        filter.setFilterProcessesUrl("/api/v1/login");
+        filter.setFilterProcessesUrl("/api/v*/login");
 
         http.csrf()
+                .disable();
+        http.cors()
                 .disable();
         http.sessionManagement()
                 .sessionCreationPolicy(STATELESS);
         http.authorizeRequests()
-                .antMatchers("/api/v1/login/**", "/api/v1/token/refresh/**")
+                .antMatchers("/swagger-ui/**", "/v3/api-docs/**")
                 .permitAll();
         http.authorizeRequests()
-                .antMatchers(GET,"/api/v1/user/**")
-                .hasAnyAuthority("ROLE_USER");
+                .antMatchers("/api/v*/login/**", "/api/v*/token/refresh/**")
+                .permitAll();
         http.authorizeRequests()
-                .antMatchers(POST,"/api/v1/user/**")
-                .hasAnyAuthority("ROLE_ADMIN");
+                .antMatchers(HttpMethod.GET, "/api/v*/category/**", "/api/v*/product/**")
+                .permitAll();
+        http.authorizeRequests()
+                .antMatchers("/api/v*/user/**")
+                .hasAnyAuthority("ROLE_ADMIN", "ROLE_SUPER_ADMIN");
         http.authorizeRequests()
                 .anyRequest()
                 .authenticated();

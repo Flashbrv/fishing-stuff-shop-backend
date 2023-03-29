@@ -1,9 +1,5 @@
 package com.example.fishingstuffshopbackend;
 
-import com.example.fishingstuffshopbackend.domain.Role;
-import com.example.fishingstuffshopbackend.domain.User;
-import com.example.fishingstuffshopbackend.service.UserService;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;

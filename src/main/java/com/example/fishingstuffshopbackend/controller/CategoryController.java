@@ -1,16 +1,19 @@
 package com.example.fishingstuffshopbackend.controller;
 
-import com.example.fishingstuffshopbackend.dto.NewCategoryDto;
-import com.example.fishingstuffshopbackend.mapper.CategoryMapper;
 import com.example.fishingstuffshopbackend.domain.Category;
+import com.example.fishingstuffshopbackend.dto.CategoryDto;
+import com.example.fishingstuffshopbackend.mapper.CategoryMapper;
 import com.example.fishingstuffshopbackend.service.CategoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/v1/category")
+@RequestMapping(path = "/api/v1/category")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -22,7 +25,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<List<CategoryDto>> getAll() {
         return ResponseEntity.ok()
                 .body(categoryService
                         .findAll()
@@ -32,20 +35,27 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable long id) {
+    public ResponseEntity<CategoryDto> getById(@PathVariable long id) {
         return ResponseEntity.ok()
                 .body(mapper.toDto(categoryService.findById(id)));
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody NewCategoryDto categoryDto) {
+    public ResponseEntity<?> create(@RequestBody final CategoryDto categoryDto) {
         Category newCategory = categoryService.create(mapper.toEntity(categoryDto));
-        return ResponseEntity.ok()
+        URI uri = URI.create(
+                ServletUriComponentsBuilder
+                    .fromCurrentContextPath()
+                    .path("/api/v1/category")
+                    .toUriString()
+        );
+        return ResponseEntity
+                .created(uri)
                 .body(mapper.toDto(newCategory));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable long id, @RequestBody NewCategoryDto categoryDto) {
+    public ResponseEntity<CategoryDto> update(@PathVariable long id, @RequestBody final CategoryDto categoryDto) {
         Category updatedCategory = categoryService.update(id, mapper.toEntity(categoryDto));
         return ResponseEntity.ok()
                 .body(mapper.toDto(updatedCategory));

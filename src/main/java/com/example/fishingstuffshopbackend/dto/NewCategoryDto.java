@@ -9,6 +9,6 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class NewCategoryDto implements Serializable {
+public class NewCategoryDto {
     private String title;
 }

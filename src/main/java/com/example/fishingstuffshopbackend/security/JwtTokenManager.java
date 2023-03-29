@@ -98,7 +98,7 @@ public class JwtTokenManager {
                 DecodedJWT decodedJWT = verifier.verify(refreshToken);
                 String email = decodedJWT.getSubject();
 
-                User user = service.getUser(email);
+                User user = service.findByEmail(email);
                 List<String> roles = user.getRoles().stream().map(role -> role.getName()).collect(Collectors.toList());
                 String accessToken = generateAccessToken(user.getEmail(), roles, accessTokenExpirationTime, request.getRequestURL().toString());
 
@@ -122,7 +122,7 @@ public class JwtTokenManager {
         }
     }
 
-    public boolean validateAccessToken(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException {
+    public boolean validateAccessToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         if (!validateHeader(authorizationHeader)) {
             log.error("Authorization header is absent");
@@ -143,7 +143,6 @@ public class JwtTokenManager {
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(email, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            filterChain.doFilter(request, response);
             return true;
         } catch (Exception exception) {
             log.error("Error login in: {}", exception.getLocalizedMessage());
