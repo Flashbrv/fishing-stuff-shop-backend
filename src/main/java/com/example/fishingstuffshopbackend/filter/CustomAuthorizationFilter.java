@@ -36,7 +36,9 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         if (request.getServletPath().equals("/api/v1/login") ||
                 request.getServletPath().equals("/api/v1/token/refresh") ||
                 request.getServletPath().contains("/swagger-ui/") ||
-                request.getServletPath().contains("/v3/api-docs")) {
+                request.getServletPath().contains("/v3/api-docs") ||
+                request.getServletPath().contains("/api/v1/registration")
+        ) {
             return true;
         }
         return false;

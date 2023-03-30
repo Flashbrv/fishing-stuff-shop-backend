@@ -8,4 +8,6 @@ public interface UserService extends ServiceBase<User>{
     Role save(Role role);
     void addRoleToUser(String email, String roleName);
     void removeRoleFromUser(String email, String roleName);
+    String signUpUser(User user);
+    String confirmEmail(String token);
 }

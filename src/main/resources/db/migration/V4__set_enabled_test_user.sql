@@ -1,0 +1,1 @@
+UPDATE `fs_users` SET `enabled`=1, `locked`=0;

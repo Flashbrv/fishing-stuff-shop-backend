@@ -1,5 +1,6 @@
 package com.example.fishingstuffshopbackend.service;
 
+import com.example.fishingstuffshopbackend.domain.ConfirmationToken;
 import com.example.fishingstuffshopbackend.domain.Role;
 import com.example.fishingstuffshopbackend.domain.User;
 import com.example.fishingstuffshopbackend.exception.BadParameterException;
@@ -32,6 +33,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ConfirmationTokenService confirmationTokenService;
+
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -45,7 +48,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             authorities.add(new SimpleGrantedAuthority(role.getName()));
         });
 
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
+        return new org.springframework.security.core.userdetails.User(user.getEmail(),
+                user.getPassword(),
+                user.isEnabled(), true, true, !user.isLocked(),
+                authorities);
     }
 
     @Override
@@ -72,6 +78,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public User create(User toCreate) {
+        // TODO: Move check logic to RegistrationRequestValidator
         requireNonNull("New user", toCreate);
 
         log.info("Check email");
@@ -95,6 +102,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         log.info("Check password");
         requireNonNullAndNonBlank("Password", toCreate.getPassword());
+
+
         log.info("Encode password");
         toCreate.setPassword(passwordEncoder.encode(toCreate.getPassword()));
 
@@ -149,4 +158,50 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 //                .orElseThrow(() -> new RoleNotFoundException(roleName));
         user.removeRole(role);
     }
+
+    @Override
+    public String signUpUser(User user) {
+        Optional<User> userOptional = userRepository
+                .findByEmail(user.getEmail());
+        if (userOptional.isPresent()) {
+            log.info("User with email {} currently present in database", user.getEmail());
+            throw new SuchUserExistException(user.getEmail());
+        }
+
+        log.info("Encode password");
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        log.info("Fetch role ROLE_USER for new user");
+        Role role = roleRepository.findByName("ROLE_USER");
+        // TODO: Check role for null and process it properly
+
+        log.info("Add role:{} to user:{}", role, user.getEmail());
+        user.addRole(role);
+
+        log.info("Saving new user {} to database", user.getEmail());
+        userRepository.save(user);
+
+        String token = confirmationTokenService.createTokenFor(user);
+
+        return token;
+    }
+
+    @Override
+    public String confirmEmail(String token) {
+        log.info("Confirm token: {}", token);
+        Optional<ConfirmationToken> tokenOptional = confirmationTokenService.confirmToken(token);
+        if (!tokenOptional.isPresent()) {
+            log.info("Token {} is not confirmed", token);
+            return "Can't confirm email. Token expired or is not valid.";
+        }
+
+        User user = tokenOptional.get().getUser();
+        user.setEnabled(true);
+        userRepository.save(user);
+        log.info("User {} was enabled", user.getEmail());
+
+        return "Email confirmed.";
+    }
+
+
 }

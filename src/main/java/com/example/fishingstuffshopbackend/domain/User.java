@@ -42,11 +42,19 @@ public class User extends BaseEntity {
     @Size(min = 8, max = 255)
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @Column(name = "enabled")
+    @Builder.Default
+    private boolean enabled = false;
+
+    @Column(name = "locked")
+    @Builder.Default
+    private boolean locked = false;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
             name = "fs_users_roles",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     @Builder.Default
     private Set<Role> roles = new HashSet<>(5);
 

@@ -246,8 +246,7 @@ ALTER TABLE `fs_users`
 -- Indexes for table `fs_users_roles`
 --
 ALTER TABLE `fs_users_roles`
-  ADD PRIMARY KEY (`user_id`,`role_id`),
-  ADD KEY `FK_USERS_ROLES_TO_ROLE` (`role_id`);
+  ADD PRIMARY KEY (`user_id`,`role_id`);
 
 --
 -- AUTO_INCREMENT for tables
@@ -342,8 +341,8 @@ ALTER TABLE `fs_users`
 -- Constraints for table `fs_users_roles`
 --
 ALTER TABLE `fs_users_roles`
-  ADD CONSTRAINT `FK_USERS_ROLES_TO_ROLE` FOREIGN KEY (`role_id`) REFERENCES `fs_roles` (`id`),
-  ADD CONSTRAINT `FK_USERS_ROLES_TO_USER` FOREIGN KEY (`user_id`) REFERENCES `fs_users` (`id`);
+  ADD CONSTRAINT `FK_USERS_ROLES_TO_USER` FOREIGN KEY (`user_id`) REFERENCES `fs_users` (`id`),
+  ADD CONSTRAINT `FK_USERS_ROLES_TO_ROLE` FOREIGN KEY (`role_id`) REFERENCES `fs_roles` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
