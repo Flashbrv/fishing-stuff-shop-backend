@@ -2,11 +2,14 @@ package com.example.fishingstuffshopbackend.controller;
 
 import com.example.fishingstuffshopbackend.domain.Role;
 import com.example.fishingstuffshopbackend.domain.User;
+import com.example.fishingstuffshopbackend.dto.RegistrationRequest;
 import com.example.fishingstuffshopbackend.dto.RoleToUserForm;
 import com.example.fishingstuffshopbackend.dto.UserDto;
 import com.example.fishingstuffshopbackend.mapper.RoleMapper;
 import com.example.fishingstuffshopbackend.mapper.UserMapper;
 import com.example.fishingstuffshopbackend.service.UserService;
+import com.example.fishingstuffshopbackend.validator.RegistrationRequestValidatorService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,17 +20,13 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/user")
+@RequiredArgsConstructor
 @Slf4j
 public class UserController {
     private final UserService service;
     private final UserMapper userMapper;
     private final RoleMapper roleMapper;
-
-    public UserController(UserService service, UserMapper userMapper, RoleMapper roleMapper) {
-        this.service = service;
-        this.userMapper = userMapper;
-        this.roleMapper = roleMapper;
-    }
+    private final RegistrationRequestValidatorService validatorService;
 
     @GetMapping
     public ResponseEntity<?> getAll() {
@@ -48,17 +47,14 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestParam String firstName,
-                                    @RequestParam String lastName,
-                                    @RequestParam String email,
-                                    @RequestParam String phoneNumber,
-                                    @RequestParam String password) {
+    public ResponseEntity<?> create(@RequestBody RegistrationRequest registrationRequest) {
+        validatorService.test(registrationRequest);
         User newUser = User.builder()
-                .firstName(firstName)
-                .lastName(lastName)
-                .email(email)
-                .phoneNumber(phoneNumber)
-                .password(password)
+                .firstName(registrationRequest.getFirstName())
+                .lastName(registrationRequest.getLastName())
+                .email(registrationRequest.getEmail())
+                .phoneNumber(registrationRequest.getPhoneNumber())
+                .password(registrationRequest.getPassword())
                 .build();
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/user").toUriString());
         return ResponseEntity.created(uri)

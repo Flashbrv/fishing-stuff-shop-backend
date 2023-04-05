@@ -9,10 +9,18 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Set;
 
 @Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
-
+    private final Set<String> PUBLIC_URLS = Set.of(
+            "/api/v1/login",
+            "/api/v1/token/refresh",
+            "/swagger-ui/",
+            "/v3/api-docs",
+            "/api/v1/registration",
+            "favicon.ico"
+    );
     private final JwtTokenManager tokenManager;
 
     public CustomAuthorizationFilter(JwtTokenManager tokenManager) {
@@ -33,14 +41,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     }
 
     private boolean isRequestToPublicPath(HttpServletRequest request) {
-        if (request.getServletPath().equals("/api/v1/login") ||
-                request.getServletPath().equals("/api/v1/token/refresh") ||
-                request.getServletPath().contains("/swagger-ui/") ||
-                request.getServletPath().contains("/v3/api-docs") ||
-                request.getServletPath().contains("/api/v1/registration")
-        ) {
-            return true;
-        }
-        return false;
+        return PUBLIC_URLS.stream().anyMatch(request.getServletPath()::contains);
     }
 }

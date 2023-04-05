@@ -3,26 +3,24 @@ package com.example.fishingstuffshopbackend.service;
 import com.example.fishingstuffshopbackend.domain.ConfirmationToken;
 import com.example.fishingstuffshopbackend.domain.User;
 import com.example.fishingstuffshopbackend.repository.ConfirmationTokenRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ConfirmationTokenService {
     @Value("${confirmation.token.expiration.time}")
     private long EXPIRATION_TIME_IN_MINUTE;
     private final ConfirmationTokenRepository repository;
-
-    public ConfirmationTokenService(ConfirmationTokenRepository repository) {
-        this.repository = repository;
-    }
 
     @Transactional
     public String createTokenFor(User user) {
@@ -47,7 +45,7 @@ public class ConfirmationTokenService {
         }
 
         Optional<ConfirmationToken> tokenOptional = repository.findByToken(token);
-        if (!tokenOptional.isPresent()) {
+        if (tokenOptional.isEmpty()) {
             log.info("There is no token:{} in database", token);
             return Optional.empty();
         }
@@ -67,7 +65,17 @@ public class ConfirmationTokenService {
         return Optional.of(confirmationToken);
     }
 
+    public boolean userHaveNoConfirmedToken(User user) {
+        List<ConfirmationToken> tokens = repository.findTokensByUserId(user);
+        return tokens.stream()
+                .noneMatch(this::isConfirmed);
+    }
+
     private boolean isNotExpired(ConfirmationToken token) {
         return token.getExpiresAt().isAfter(LocalDateTime.now());
+    }
+
+    private boolean isConfirmed(ConfirmationToken token) {
+        return token.getConfirmedAt() != null;
     }
 }
